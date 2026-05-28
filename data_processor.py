@@ -12,3 +12,6 @@ def load_statement(file) -> pd.DataFrame:
         .str.replace(r"[^0-9.-]", "", regex=True)
     )
     df["Amount"] = pd.to_numeric(df["Amount"], errors="coerce")
+    df["Type"] = df["Amount"].apply(
+        lambda x: "Income" if x > 0 else "Expense"
+    )
