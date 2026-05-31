@@ -18,3 +18,14 @@ def load_statement(file) -> pd.DataFrame:
     df["AbsAmount"] = df["Amount"].abs()
 
     return df
+
+def get_summary(df: pd.DataFrame) -> dict:
+    total_income = df[df["Type"] == "Income"]["Amount"].sum()
+    total_expenses = df[df["Type"] == "Expense"]["Amount"].sum().abs()
+
+    return {
+        "total_income": total_income,
+        "total_expenses": total_expenses,
+        "net_savings": total_income - total_expenses,
+        "expense_count": len(df[df["Type"] == "Expense"]),
+    }
