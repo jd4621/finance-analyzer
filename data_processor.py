@@ -21,7 +21,7 @@ def load_statement(file) -> pd.DataFrame:
 
 def get_summary(df: pd.DataFrame) -> dict:
     total_income = df[df["Type"] == "Income"]["Amount"].sum()
-    total_expenses = df[df["Type"] == "Expense"]["Amount"].sum().abs()
+    total_expenses = abs(df[df["Type"] == "Expense"]["Amount"].sum())
 
     return {
         "total_income": total_income,
