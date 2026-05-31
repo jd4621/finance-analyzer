@@ -15,3 +15,6 @@ def load_statement(file) -> pd.DataFrame:
     df["Type"] = df["Amount"].apply(
         lambda x: "Income" if x > 0 else "Expense"
     )
+    df["AbsAmount"] = df["Amount"].abs()
+
+    return df
