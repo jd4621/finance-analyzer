@@ -27,7 +27,7 @@ def spending_over_time_chart(df: pd.DataFrame):
         labels={"ABsAmount": "Amount (KES)", "Date": "Date"},
     )
 
-    fig.update_traces(line_color="#e74c3c")
+    fig.update_traces(line_color="#e74c3c")                 # Red lines for expenses
     return fig
 
 
@@ -41,4 +41,5 @@ def top_expenses_chart(df: pd.DataFrame):
         labels={"AbsAMount": "Amount (KES)", "Description": ""},
     )
 
-    fig.update_traces()
+    fig.update_traces(marker_color="#e74c3c")             # Red bars for expenses
+    return fig
