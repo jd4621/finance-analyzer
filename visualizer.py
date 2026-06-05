@@ -34,6 +34,7 @@ def spending_over_time_chart(df: pd.DataFrame):
 def top_expenses_chart(df: pd.DataFrame):
     top = df[df["Type"] == "Expense"].nlargest(10, "AbsAmount")
     fig = px.bar(
+        top,
         x="AbsAmount",
         y="Description",
         orientation="h",
