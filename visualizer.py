@@ -34,7 +34,8 @@ def spending_by_category_chart(df: pd.DataFrame):
 
 def spending_over_time_chart(df: pd.DataFrame):
     daily = df[df["Type"] == "Expense"].groupby("Date")["AbsAmount"].sum().reset_index()
-    fig = px.line(
+
+    fig = px.area(
         daily,
         x="Date",
         y="AbsAmount",
@@ -42,7 +43,21 @@ def spending_over_time_chart(df: pd.DataFrame):
         labels={"ABsAmount": "Amount (KES)", "Date": "Date"},
     )
 
-    fig.update_traces(line_color="#e74c3c")                 # Red lines for expenses
+    fig.update_traces(
+        line_color=COLORS["danger"],
+        fillcolor="rgba(231, 76, 60, 0.2)"
+    )
+
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#a8b2d8"),
+        title_font=dict(size=16, color="#ffffff"),
+        xaxis=dict(gridcolor="#2d3250"),
+        yaxis=dict(gridcolor="#2d3250"),
+
+    )
+
     return fig
 
 
