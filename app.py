@@ -203,3 +203,23 @@ if len(uploaded_files) > 1:
 st.divider()
 
 # ------------------- Smart AI Insights ----------------------------------------------
+st.markdown('<p class="section-header"> AI Insights</p>', unsafe_allow_html=True)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("#### 💡 Smart Observations")
+    with st.spinner("Analyzing patterns..."):
+        insights = get_smart_insights(df, category_totals, budgets)
+    st.markdown(insights)
+
+with col2:
+    st.markdown("#### 🎯 Recommendations")
+    with st.spinner("Generating recommendations..."):
+        recommendations = get_recommendations(summary, category_totals)
+    st.markdown(recommendations)
+
+st.divider()
+
+
+# --------------- PDF Export -------------------------------------------------------
