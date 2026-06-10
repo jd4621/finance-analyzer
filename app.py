@@ -223,3 +223,22 @@ st.divider()
 
 
 # --------------- PDF Export -------------------------------------------------------
+st.markdown('<p class="section-header"> Export Report</p>', unsafe_allow_html=True)
+
+if st.button("Generate PDF Report", use_container_width=True):
+    with st.spinner("Generating your report..."):
+        pdf_bytes = generate_pdf_report(summary, category_totals, budgets, savings_goal)
+        st.download_button(
+            label="⬇️ Download PDF Report",
+            data=pdf_bytes,
+            file_name="finance_report.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
+
+
+# ------------ Raw data ------------------------------------------------------------------
+with st.expander("View raw transactions"):
+    category_filter = st.selectbox("Filter by category", ["All"] + list(df["Category"].unique()))
+    filtered = df if category_filter == "All" else df[df["Category"] == category_filter]
+    st.dataframe(filtered[["Date", "Description", "Amount", "Category", "Type"]], use_container_width=True)
