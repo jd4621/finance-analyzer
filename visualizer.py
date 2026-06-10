@@ -1,5 +1,15 @@
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
+
+COLORS = {
+    "primary": "#7c83fd",
+    "danger": "#e74c3c",
+    "success": "#2ecc71",
+    "warning": "#f39c12",
+    "palette": ["#7c83fd", "#2ecc71", "#f39c12", "#e74c3c",
+                "#a8b2d8", "#fd7c83", "#7cfda8", "#fdd97c"]
+}
 
 def spending_by_category_chart(df: pd.DataFrame):
     expenses = df[df["Type"] == "Expense"].groupby("Category")["AbsAmount"].sum().reset_index()
@@ -8,11 +18,16 @@ def spending_by_category_chart(df: pd.DataFrame):
         values="AbsAmount",
         names="Category",
         title="Spending by Category",
-        hole=0.4
+        hole=0.5,
+        color_discrete_sequence=COLORS["palette"]
     )
 
     fig.update_layout(
-        legend=dict(orientation="h", y=-0.2)
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#a8b2d8"),
+        legend=dict(orientation="h", y=-0.2),
+        title_font=dict(size=16, color="#ffffff"),
     )
 
     return fig
