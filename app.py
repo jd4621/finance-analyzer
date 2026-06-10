@@ -131,3 +131,27 @@ with st.spinner("Categorizing your transactions..."):
 
 
 # -------------- Summary metrics -----------------------------------------
+summary = get_summary(df)
+
+st.markdown('<p class="section-header"> Monthly Overview</p>', unsafe_allow_html=True)
+
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.metric("Total Income", f"KES {summary['total_income']:,.0f}")
+with col2:
+    st.metric("Total Expenses", f"KES {summary['total_expenses']:,.0f}")
+with col3:
+    delta = summary['net_savings'] - savings_goal
+    st.metric(
+        "Net Savings",
+        f"KES {summary['net_savings']:,.0f}",
+        delta=f"KES {delta:,.0f} vs goal",
+        delta_color="normal" if delta >= 0 else "inverse"
+    )
+with col4:
+    rate = (summary['net_savings'] / summary['total_income'] * 100) if summary['total_income'] > 0 else 0
+    st.metric("Savings Rate", f"{rate:.1f}%")
+
+st.divider()
+
+# ----------------- Budget Tracker -------------------------------------------------
