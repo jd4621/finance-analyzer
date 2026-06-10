@@ -187,3 +187,19 @@ st.divider()
 
 
 # ------------------------- Charts ---------------------------------------------------------
+st.markdown('<p class="section-header"> Spending Analysis</p>', unsafe_allow_html=True)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.plotly_chart(spending_by_category_chart(df), use_container_width=True)
+with col2:
+    st.plotly_chart(top_expenses_chart(df), use_container_width=True)
+
+st.plotly_chart(spending_over_time_chart(df), use_container_width=True)
+
+if len(uploaded_files) > 1:
+    st.plotly_chart(monthly_comparison_chart(df), use_container_width=True)
+
+st.divider()
+
+# ------------------- Smart AI Insights ----------------------------------------------
