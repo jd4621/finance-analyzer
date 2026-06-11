@@ -119,3 +119,42 @@ def monthly_comparison_chart(df: pd.DataFrame):
 
 
 def budget_vs_actual_chart(category_totals: dict, budgets: dict):
+    categories = list(budgets.keys())
+    actual = [category_totals.get(cat, 0) for cat in categories]
+    budget = [budgets[cat] for cat in categories]
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        name="Budget",
+        x=categories,
+        y=budget,
+        marker_color="#7c83fd",
+        opacity=0.6,
+    ))
+
+    fig.add_trace(go.Bar(
+        name="Actual",
+        x=categories,
+        y=actual,
+        marker_color=[
+            COLORS["danger"] if a > b else COLORS["success"]
+            for a, b in zip(actual, budget)
+        ],
+    ))
+
+    fig.update_layout(
+        title="Budget vs Actual Spending",
+        barmode="group",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#a8b2d8"),
+        title_font=dict(size=16, color="#ffffff"),
+        xaxis=dict(gridcolor="#2d3250"),
+        yaxis=dict(gridcolor="#2d3250", title="Amount (KES)"),
+        legend=dict(orientation="h", y=0.3),
+    )
+
+    return fig
+
+
