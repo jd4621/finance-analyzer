@@ -56,3 +56,28 @@ def get_smart_insights(df: pd.DataFrame, category_totals: dict, budgets: dict) -
         for cat in budgets
         if category_totals.get(cat, 0) > budgets[cat]
     ]
+
+    day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    daily_totals = df[df["Type"] == "Expense"].groupby("DayofWeek")["AbsAmount"].sum()
+    top_day = day_names[daily_totals.idxmax()] if not daily_totals.empty else "N/A"
+
+    prompt = f"""You are a sharp personal finance analyst. Based on this data, give 4 specific pattern-based observations.
+
+Spending Patterns:
+- Weekend spending: KES {weekend_spending:,.0f}
+- Weekday spending: KES {weekday_spending:,.0f
+- Highest spending day: {top_day}}
+- Over-budget categories: {', '.join(over_budget) if over_budget else 'None'}
+- Total transactions: {len(df)}
+
+Give exactly 4 specific observations about spending patterns.
+Reference actual numbers. Be direct and insightful.
+Format as a numbered list starting with 1."""
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return response.choices[0].message.content
