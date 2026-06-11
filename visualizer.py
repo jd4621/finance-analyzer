@@ -116,3 +116,6 @@ def monthly_comparison_chart(df: pd.DataFrame):
     )
 
     return fig
+
+
+def budget_vs_actual_chart(category_totals: dict, budgets: dict):
