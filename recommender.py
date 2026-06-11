@@ -1,6 +1,7 @@
 import os
 from groq import Groq
 from dotenv import load_dotenv
+import pandas as pd
 
 load_dotenv()
 
@@ -34,3 +35,19 @@ Format each recommendation as a numbered list starting with 1."""
     )
 
     return response.choices[0].message.content
+
+
+def get_smart_insights(df: pd.DataFrame, category_totals: dict, budgets: dict) -> str:
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+    df = df.copy()
+    df["DayofWeek"] = df["Date"].dt.dayofweek
+
+    weekend_spending = df[
+        (df["Type"] == "Expense") & (df["DayofWeek"] >= 5)
+    ]["AbsAmount"].sum()
+
+    weekday_spending = df[
+        (df["Type"] == "Expense") & (df["DayofWeek"] < 5)
+    ]["AbsAmount"].sum()
+

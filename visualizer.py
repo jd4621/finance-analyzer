@@ -156,5 +156,3 @@ def budget_vs_actual_chart(category_totals: dict, budgets: dict):
     )
 
     return fig
-
-
