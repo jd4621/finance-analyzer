@@ -51,3 +51,8 @@ def get_smart_insights(df: pd.DataFrame, category_totals: dict, budgets: dict) -
         (df["Type"] == "Expense") & (df["DayofWeek"] < 5)
     ]["AbsAmount"].sum()
 
+    over_budget = [
+        f"{cat} (spent KES {category_totals.get(cat, 0):,.0f} vs budget KES {budgets[cat]:,.0f})"
+        for cat in budgets
+        if category_totals.get(cat, 0) > budgets[cat]
+    ]
