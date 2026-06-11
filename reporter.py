@@ -27,3 +27,22 @@ def generate_pdf_report(summary: dict, category_totals: dict,
     pdf.set_line_width(0.5)
     pdf.line(10, pdf.get_y(), 200, pdf.get_y())
     pdf.ln(4)
+
+    metrics = [
+        ("Total Income",    f"KES {summary['total_income']:,.0f}",      (46, 204, 113)),
+        ("Total Expenses",  f"KES {summary['total_expenses']:,.0f}",    (231, 76, 60)),
+        ("Net Savings",     f"KES {summary['net_savings']:,.0f}",
+         (46, 204, 113) if summary['net_savings'] >= 0 else (231, 76, 60)),
+        ("Savings Goal",    f"KES {savings_goal:,.0f}",                 (124, 131, 253)),
+    ]
+
+    for label, value, color in metrics:
+        pdf.set_font("Helvetica", "", 11)
+        pdf.set_text_color(80, 80, 80)
+        pdf.cell(80, 10, label)
+        pdf.set_font("Helvetica", "B", 11)
+        pdf.set_text_color(*color)
+        pdf.cell(80, 10, value, ln=True)
+
+    pdf.ln(6)
+
