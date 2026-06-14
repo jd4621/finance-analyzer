@@ -65,8 +65,8 @@ def get_smart_insights(df: pd.DataFrame, category_totals: dict, budgets: dict) -
 
 Spending Patterns:
 - Weekend spending: KES {weekend_spending:,.0f}
-- Weekday spending: KES {weekday_spending:,.0f
-- Highest spending day: {top_day}}
+- Weekday spending: KES {weekday_spending:,.0f}
+- Highest spending day: {top_day}
 - Over-budget categories: {', '.join(over_budget) if over_budget else 'None'}
 - Total transactions: {len(df)}
 
