@@ -160,7 +160,7 @@ st.markdown('<p class="section-header"> Budget vs Actual</p>', unsafe_allow_html
 category_totals = df[df["Type"] == "Expense"].groupby("Category")["AbsAmount"].sum().to_dict()
 
 cols = st.columns(4)
-for i, (category, budget) in enumerate(budget.items()):
+for i, (category, budget) in enumerate(budgets.items()):
     actual = category_totals.get(category, 0)
     pct = (actual / budget * 100) if budget > 0 else 0
     over = actual > budget
