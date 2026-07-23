@@ -7,6 +7,22 @@ from visualizer import (spending_by_category_chart, spending_over_time_chart,
 from recommender import get_recommendations, get_smart_insights
 from report import generate_pdf_report
 
+
+@st.cache_data(show_spinner=False)
+def cached_categories(descriptions: tuple[str, ...]) -> dict:
+    """Avoid repeating a categorization request when Streamlit reruns."""
+    return categorize_transactions(list(descriptions))
+
+
+@st.cache_data(show_spinner=False)
+def cached_insights(data: pd.DataFrame, category_totals: dict, budgets: dict) -> str:
+    return get_smart_insights(data, category_totals, budgets)
+
+
+@st.cache_data(show_spinner=False)
+def cached_recommendations(summary: dict, category_totals: dict) -> str:
+    return get_recommendations(summary, category_totals)
+
 # ------------ Page config -------------------------------------------
 st.set_page_config(
     page_title="Finance Analyzer",
@@ -30,7 +46,7 @@ st.markdown("""
     }
     
     /* sidebar */
-    [data-testid="stSidebar] {
+    [data-testid="stSidebar"] {
         background-color: #1e2130;
         border-right: 1px solid #2d3250;
     }
@@ -117,17 +133,40 @@ if not uploaded_files:
 # ---------- Load and combine all uploaded files -----------------------------------------
 all_dfs = []
 for file in uploaded_files:
-    df = load_statement(file)
+    try:
+        df = load_statement(file)
+    except (ValueError, pd.errors.ParserError) as error:
+        st.warning(f"Skipping {file.name}: {error}")
+        continue
+
+    if df.empty:
+        st.warning(f"Skipping {file.name}: no valid transactions were found.")
+        continue
+
     df["Source"] = file.name
     all_dfs.append(df)
+
+if not all_dfs:
+    st.error("None of the uploaded files contained valid transactions.")
+    st.stop()
 
 df = pd.concat(all_dfs, ignore_index=True)
 
 # -------------- AI Categorization --------------------------
-with st.spinner("Categorizing your transactions..."):
-    descriptions = df["Description"].unique().tolist()
-    categories = categorize_transactions(descriptions)
-    df["Category"] = df["Description"].map(categories).fillna("Other")
+df["Category"] = "Other"
+df.loc[df["Type"] == "Income", "Category"] = "Income"
+expense_descriptions = tuple(sorted(df.loc[df["Type"] == "Expense", "Description"].unique()))
+
+if expense_descriptions:
+    try:
+        with st.spinner("Categorizing your transactions..."):
+            categories = cached_categories(expense_descriptions)
+        expense_mask = df["Type"] == "Expense"
+        df.loc[expense_mask, "Category"] = (
+            df.loc[expense_mask, "Description"].map(categories).fillna("Other")
+        )
+    except Exception as error:
+        st.warning(f"AI categorization is unavailable; uncategorized expenses are shown as Other. ({error})")
 
 
 # -------------- Summary metrics -----------------------------------------
@@ -209,15 +248,21 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("#### 💡 Smart Observations")
-    with st.spinner("Analyzing patterns..."):
-        insights = get_smart_insights(df, category_totals, budgets)
-    st.markdown(insights)
+    try:
+        with st.spinner("Analyzing patterns..."):
+            insights = cached_insights(df, category_totals, budgets)
+        st.markdown(insights)
+    except Exception as error:
+        st.info(f"AI insights are currently unavailable. ({error})")
 
 with col2:
     st.markdown("#### 🎯 Recommendations")
-    with st.spinner("Generating recommendations..."):
-        recommendations = get_recommendations(summary, category_totals)
-    st.markdown(recommendations)
+    try:
+        with st.spinner("Generating recommendations..."):
+            recommendations = cached_recommendations(summary, category_totals)
+        st.markdown(recommendations)
+    except Exception as error:
+        st.info(f"AI recommendations are currently unavailable. ({error})")
 
 st.divider()
 

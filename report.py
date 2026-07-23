@@ -2,7 +2,7 @@ from fpdf import FPDF
 from datetime import datetime
 
 def generate_pdf_report(summary: dict, category_totals: dict,
-                        budgets: dict, savings_goal: dict) -> bytes:
+                        budgets: dict, savings_goal: float) -> bytes:
     pdf = FPDF()
     pdf.add_page()
 
@@ -82,7 +82,7 @@ def generate_pdf_report(summary: dict, category_totals: dict,
     pdf.line(10, pdf.get_y(), 200, pdf.get_y())
     pdf.ln(4)
 
-    progress = min(summary['net_savings'] / savings_goal, 1.0) if savings_goal > 0 else 0
+    progress = max(0, min(summary['net_savings'] / savings_goal, 1.0)) if savings_goal > 0 else 0
 
     bar_width = 190
     filled = int(bar_width * progress)
@@ -97,6 +97,6 @@ def generate_pdf_report(summary: dict, category_totals: dict,
     pdf.ln(12)
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(80, 80, 80)
-    pdf.cell(0, 6, f"Progress: {progress*100:.f}% of KES {savings_goal:,.0f} goal", ln=True)
+    pdf.cell(0, 6, f"Progress: {progress*100:.0f}% of KES {savings_goal:,.0f} goal", ln=True)
 
     return bytes(pdf.output())

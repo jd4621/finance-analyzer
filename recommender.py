@@ -1,12 +1,11 @@
-import os
-from groq import Groq
 from dotenv import load_dotenv
 import pandas as pd
+from categorizer import _get_client
 
 load_dotenv()
 
 def get_recommendations(summary: dict, category_totals: dict) -> str:
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    client = _get_client()
     categories_text = "\n".join([
         f"- {category}: KES {amount:,.0f}"
         for category, amount in sorted(category_totals.items(),
@@ -38,7 +37,7 @@ Format each recommendation as a numbered list starting with 1."""
 
 
 def get_smart_insights(df: pd.DataFrame, category_totals: dict, budgets: dict) -> str:
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    client = _get_client()
 
     df = df.copy()
     df["DayofWeek"] = df["Date"].dt.dayofweek

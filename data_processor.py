@@ -1,17 +1,30 @@
 import pandas as pd
 
+
+REQUIRED_COLUMNS = {"Date", "Description", "Amount"}
+
+
 def load_statement(file) -> pd.DataFrame:
     df = pd.read_csv(file)
     df.columns = df.columns.str.strip()
+
+    missing_columns = REQUIRED_COLUMNS - set(df.columns)
+    if missing_columns:
+        missing = ", ".join(sorted(missing_columns))
+        raise ValueError(f"Missing required column(s): {missing}.")
+
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    df = df.dropna(subset=["Date"])
     df["Amount"] = pd.to_numeric(
         df["Amount"].astype(str).str.replace(",", "").str.replace("[^0-9.-]", "", regex=True),
         errors="coerce"
     )
-    df["Type"] = df["Amount"].apply(
-        lambda x: "Income" if x > 0 else "Expense"
-    )
+    df = df.dropna(subset=["Date", "Amount", "Description"]).copy()
+    df["Description"] = df["Description"].astype(str).str.strip()
+    df = df[df["Description"].ne("")].copy()
+
+    df["Type"] = "Neutral"
+    df.loc[df["Amount"] > 0, "Type"] = "Income"
+    df.loc[df["Amount"] < 0, "Type"] = "Expense"
     df["AbsAmount"] = df["Amount"].abs()
     return df
 

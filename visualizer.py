@@ -40,7 +40,7 @@ def spending_over_time_chart(df: pd.DataFrame):
         x="Date",
         y="AbsAmount",
         title="Daily Spending over Time",
-        labels={"ABsAmount": "Amount (KES)", "Date": "Date"},
+        labels={"AbsAmount": "Amount (KES)", "Date": "Date"},
     )
 
     fig.update_traces(
@@ -69,7 +69,7 @@ def top_expenses_chart(df: pd.DataFrame):
         y="Description",
         orientation="h",
         title="Top 10 Expenses",
-        labels={"AbsAMount": "Amount (KES)", "Description": ""},
+        labels={"AbsAmount": "Amount (KES)", "Description": ""},
         color="AbsAmount",
         color_continuous_scale=["#7c83fd", "#e74c3c"]
     )
@@ -88,11 +88,12 @@ def top_expenses_chart(df: pd.DataFrame):
 
 def monthly_comparison_chart(df: pd.DataFrame):
     df = df.copy()
-    df["Month"] = df["Date"].dt.strftime("%b %Y")
+    df["Month"] = df["Date"].dt.to_period("M")
 
     monthly = df[df["Type"] == "Expense"].groupby(
         ["Month", "Category"]
     )["AbsAmount"].sum().reset_index()
+    monthly["Month"] = monthly["Month"].astype(str)
 
     fig = px.bar(
         monthly,
